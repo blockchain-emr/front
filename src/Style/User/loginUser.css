@@ -1,0 +1,67 @@
+.col
+{
+    height:385px;
+}
+
+h1
+{
+    text-align: center;
+    padding-top:200px;
+    color: white;
+    
+}
+p{
+    color: white;
+    text-align: center;
+}
+.login-main-text {
+    margin-top:0%;
+    padding:30px;
+    color: #fff;
+  }
+  input
+  {
+      outline: none;
+  }
+ 
+  #btnlog
+  {     
+      
+      color:white;
+      width: 100px;
+      background-color:#65b4ce;
+  }
+  #btnlog:hover
+  {     
+      
+      color:#65b4ce;
+      border: 1px solid #65b4ce;
+      background-color:white;
+  }
+  i
+  {     
+      color: white;
+  }
+  .login-main-form
+  {
+      
+      padding:40px;
+      padding-top:20%;
+      color:black;
+  }
+  
+.row
+{
+    background-color: white;
+}
+.left
+{       
+        height: 350px;
+        margin-top: 20px;
+        background-color:rgb(101, 180, 206);
+}
+.right
+{       
+        height: 350px;;
+        background-color:white;
+}
