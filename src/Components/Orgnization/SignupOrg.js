@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import swal from 'sweetalert';
+import {Link,Redirect} from "react-router-dom";
 const emailRegex = RegExp(
   /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
 );
@@ -20,7 +22,7 @@ const formValid = ({ formErrors, ...rest }) => {
   return valid;
 };
 
-class SignupUser extends Component {
+class SignupOrg extends Component {
   constructor(props) {
     super(props);
 
@@ -43,11 +45,52 @@ class SignupUser extends Component {
   handleSubmit = e => {
     e.preventDefault();
 
-    if (formValid(this.state)) {
-     console.error("hiiiiii")
-    } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
+      if (formValid(this.state)) {
+        fetch('http://c89841f1.ngrok.io/api/users', {
+          method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: this.state.username,
+            fullOrgName:this.state.fullOrgName,
+            orgName:this.state.orgName,
+            email:this.state.email,
+            phone:this.state.phone,
+            password: this.state.password
+          })
+         
+          
+        })
+         .then(response=>response.json())
+        .then(response=>{
+          console.log(response)
+        this.setState({
+          resp:response
+        })
+          if(this.state.resp.status_code==201)
+      { 
+        
+        
+        this.setState({
+          validAccount:true
+        })
+      }
     }
+        )
+      
+      }
+      else{
+        swal({
+        
+          title: "Not Valid",
+          icon: "error",
+          dangerMode: true,
+        })
+      }
+  
+    
   };
 
   handleChange = e => {
@@ -85,6 +128,15 @@ class SignupUser extends Component {
 
   render() {
     const { formErrors } = this.state;
+    if(this.state.validAccount){
+      return(
+        <Redirect to={{
+          pathname: '/Login',
+         
+      }}
+/>
+      )
+    }
     return (
       <div className="container">
         <div className="row">
@@ -106,7 +158,7 @@ class SignupUser extends Component {
             <div className="right">
               <div className="login-main-form" style={{paddingTop:"10px"}}>
                 <div className="login-form">
-                  <form>
+                  <form onSubmit={this.handleSubmit} noValidate>
                   <div className="input-group form-group">
                       <div className="input-group-prepend">
                         <span
@@ -222,6 +274,7 @@ class SignupUser extends Component {
                         value="Sign up"
                         className="btn login_btn"
                         id="btnlog"
+                        onClick={this.handleSubmit}
                       />
                     </div>
                   </form>
@@ -237,4 +290,4 @@ class SignupUser extends Component {
   }
 }
 
-export default SignupUser;
+export default SignupOrg;

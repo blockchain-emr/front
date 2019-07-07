@@ -9,13 +9,13 @@ export default class Banner extends Component {
 			<div class="container">
 				<div class="banner_content">
 					<h2>
-						Growing up your <br/>
-						children with our most <br/>
-						smart monitization <br/>
+					Control your health 
+  <br/>
+  information securely,<br/>
+						in one place <br/>
 					</h2>
 					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
-						magna aliqua.
+					Your doctor has selected <span style={{color:"black",fontWeight:"bold"}}>CARE</span><span style={{color:"#65b4ce",fontWeight:"bold"}}>BLOCKS</span> so you can access your medical records anytime, anywhere
 					</p>
 					
 				</div>

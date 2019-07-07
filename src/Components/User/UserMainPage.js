@@ -5,6 +5,7 @@ import Lists from "./Lists.js";
 import '../../Style/User/UserMainPage.css';
 import ContactDr from './ContactDr';
 import Profile from './Profile';
+import All from "../Home/All";
 import {BrowserRouter as Router,Switch,Route,Link} from 'react-router-dom';
 
 export default class UserMainPage extends Component {
@@ -28,9 +29,12 @@ export default class UserMainPage extends Component {
   <hr style={{backgroundColor:"#f0f4f7"}} />
   <Link to="./ContactDr">Contact<i class="fa fa-envelope" style={{fontSize:"25px",marginLeft:"45px"}}></i></Link>
   
+  
+  
 </div>
 
 <br/><br/><br/><br/>  
+
 <div className="container">
 <div class="main">
   
@@ -40,6 +44,8 @@ export default class UserMainPage extends Component {
   <Route  path="/Lists" component={Lists}/>
   <Route  path="/Notifications" component={Notifications}/>
   <Route  path="/ContactDr" component={ContactDr}/>
+  <Route  path="/All" component={All}/>
+  
   </Switch>
   
 </div>

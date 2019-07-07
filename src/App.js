@@ -17,21 +17,25 @@ import Lists from './Components/User/Lists';
 import LoginUser from './Components/User/LoginUser';
 import All from './Components/Home/All';
 import OrgMainPage from './Components/Orgnization/OrgMainPage';
+import Search from './Components/Orgnization/Search';
+import Notfound from './Components/Home/Notfound';
 class App extends Component {
   render() {
     return (
-      /*<Router>
+      <Router>
       <div className="App">
       <Route exact path="/" component={All}/>
       <Route path="/All" component={All}/>
       <Route path="/Login" component={Login}/>
       <Route path="/Signup" component={Signup}/>
       <Route path="/Profile" component={UserMainPage}/>
+      <Route path="/OrgProfile" component={OrgMainPage}/> 
+      
+     
+      
       </div>
-      </Router>*/
-      <div>
-        <OrgMainPage/>
-      </div>
+      </Router>
+     
     );
   }
 }
