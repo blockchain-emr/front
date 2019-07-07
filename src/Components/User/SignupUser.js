@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-
+import swal from 'sweetalert';
+import {Link,Redirect} from "react-router-dom";
 const emailRegex = RegExp(
   /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
 );
 const PhoneRegex = RegExp(/^01[0-2]{1}[0-9]{8}/);
-
+const NationalIdRegex=RegExp(/^[0-9]{14}/)
 const formValid = ({ formErrors, ...rest }) => {
   let valid = true;
 
@@ -31,26 +32,71 @@ class SignupUser extends Component {
       userName:null,
       email: null,
       phone: null,
+      nationalId:null,
       password: null,
+      age:null,
+      resp:[],
       formErrors: {
         firstName: "",
         lastName: "",
         userName:"",
         email: "",
+        nationalId:"",
         phone: "",
-        password: ""
+        password: "",
+        age:""
       }
     };
   }
 
   handleSubmit = e => {
     e.preventDefault();
-
-    if (formValid(this.state)) {
+if (formValid(this.state)) {
+      fetch('http://c89841f1.ngrok.io/api/users', {
+        method: 'POST',
+          headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          phone: this.state.phone,
+          nationalId: this.state.nationalId,
+          email: this.state.email,
+          password: this.state.password,
+          age:this.state.age
+        })
+       
+        
+      })
+       .then(response=>response.json())
+      .then(response=>{
+        console.log(response)
+      this.setState({
+        resp:response
+      })
+        if(this.state.resp.status_code==201)
+    { 
       
-    } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
+      
+      this.setState({
+        validAccount:true
+      })
     }
+  }
+      )
+    
+    }
+    else{
+      swal({
+      
+        title: "Not Valid",
+        icon: "error",
+        dangerMode: true,
+      })
+    }
+  
   };
 
   handleChange = e => {
@@ -79,6 +125,12 @@ class SignupUser extends Component {
       case "phone":
         formErrors.phone = PhoneRegex.test(value) ? "" : "invalid  Phone";
         break;
+        case "nationalId":
+        formErrors.nationalId = value.length ==14 ? "" : "invalid  National ID";
+        break;
+        case "age":
+          formErrors.age = value>0&&value<120 ? "" : "invalid Age";
+          break;
       case "password":
         formErrors.password =
           value.length < 6 ? "minimum 6 characaters required" : "";
@@ -90,8 +142,19 @@ class SignupUser extends Component {
     this.setState({ formErrors, [name]: value }, () => console.log(this.state));
   };
 
-  render() {
+  render() 
+  {
     const { formErrors } = this.state;
+    if(this.state.validAccount){
+      return(
+        <Redirect to={{
+          pathname: '/Login',
+         
+      }}
+/>
+      )
+    }
+
     return (
       <div className="container" >
         <div className="row"style={{height:"500px"}}>
@@ -111,7 +174,7 @@ class SignupUser extends Component {
             <div className="right">
               <div className="login-main-form" style={{ paddingTop: "10px" }}>
                 <div className="login-form">
-                  <form method="post">
+                  <form onSubmit={this.handleSubmit} noValidate>
                     <div class="input-group form-group">
                       <div className="input-group-prepend">
                         <span
@@ -177,13 +240,14 @@ class SignupUser extends Component {
                         </span>
                       </div>
                       <input
-                        type="phone"
+                        type="tel"
                         className="form-control"
                         placeholder="Phone"
                         name="phone"
                         noValidate
                         onChange={this.handleChange}
                       />
+                      
                         {formErrors.phone.length > 0 && (
                 <span className="errorMessage" style={{color:"red"}}>{formErrors.phone}</span>)}
                     </div>
@@ -193,9 +257,53 @@ class SignupUser extends Component {
                           className="input-group-text"
                           style={{ backgroundColor: "#65b4ce" }}
                         >
-                          <i className="fas fa-envelope" />
+                          <i class="fas fa-credit-card"></i>
                         </span>
                       </div>
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="National Id"
+                        name="nationalId"
+                        noValidate
+                        onChange={this.handleChange}
+                      />
+                      
+                        {formErrors.nationalId.length> 0 && (
+                <span className="errorMessage" style={{color:"red"}}>{formErrors.nationalId}</span>)}
+                    </div>
+                    <div className="input-group form-group">
+                      <div className="input-group-prepend">
+                        <span
+                          className="input-group-text"
+                          style={{ backgroundColor: "#65b4ce" }}
+                        >
+                          <i class="fas fa-credit-card"></i>
+                        </span>
+                      </div>
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Age"
+                        name="age"
+                        noValidate
+                        onChange={this.handleChange}
+                      />
+                      
+                        {formErrors.age.length> 0 && (
+                <span className="errorMessage" style={{color:"red"}}>{formErrors.age}</span>)}
+                    </div>
+                    
+                    
+                    <div className="input-group form-group">
+                      <div className="input-group-prepend">
+                        <span
+                          className="input-group-text"
+                          style={{ backgroundColor: "#65b4ce" }}
+                        >
+                          <i className="fas fa-envelope" />
+                        </span>
+                      </div>  
                       <input
                       
                         type="email"
@@ -231,20 +339,7 @@ class SignupUser extends Component {
                 <span className="errorMessage" style={{color:"red"}}>{formErrors.password}</span>
               )}
                     </div>
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span
-                          className="input-group-text"
-                          style={{ backgroundColor: "#65b4ce" }}
-                        >
-                          <i className="fas fa-venus-mars" />
-                        </span>
-                      </div>
-                      <select className="custom-select" id="inputGroupSelect01">
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
-                      </select>
-                    </div>
+                    
 
                     <div className="form-group">
                       <input
@@ -252,6 +347,7 @@ class SignupUser extends Component {
                         value="Sign up"
                         className="btn login_btn"
                         id="btnlog"
+                        onClick={this.handleSubmit}
                       />
                     </div>
                   </form>

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "../../Style/User/loginUser.css";
-import {Link} from "react-router-dom";
+import axios from 'axios';
+import {Link,Redirect} from "react-router-dom";
+import swal from 'sweetalert';
 
 const formValid = ({ formErrors, ...rest }) => {
   let valid = true;
@@ -24,33 +26,32 @@ class LoginUser extends Component {
  
   constructor(props) {
     super(props);
-    this.handleShowSnackbar = this.handleShowSnackbar.bind(this);
-    this.handleTimeoutSnackbar = this.handleTimeoutSnackbar.bind(this);
-    this.state = { isSnackbarActive: false };
-
-    this.state = {
-     username: null,
-      password: null,
+     this.state = {
+      username: "",
+      password: "",
+      resp:[],
       formErrors: {
         username:"",
         password: ""
-      }
-     
-    };
+      }}
+    this.onChange=this.onChange.bind(this);
+    this.handleSubmit=this.handleSubmit.bind(this);
   }
-  onClickLogin(){
-    return(<Link to="/Profile"></Link>)
-  }
+  
 
-  handleSubmit = e => {
-    e.preventDefault();
-    if (formValid(this.state)) {
-          return(<Link to="/Profile"></Link>)
+ /*  handleSubmit = e => {
+    
+    return(
+    <Link to="/Profile"></Link>)
+   if (formValid(this.state)) {
+      
+         
       
     } else {
       console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
     }
   }
+  
   
   handleChange = e => {
     e.preventDefault();
@@ -71,13 +72,99 @@ class LoginUser extends Component {
     }
 
     this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-  };
+
+   
+};*/
+  onChange(e){
+    e.preventDefault();
+      this.setState({[e.target.name]:e.target.value})
+      const { name, value } = e.target;
+    let formErrors = { ...this.state.formErrors };
+
+    switch (name) {
+      case "username":
+        formErrors.username =
+          value.length < 3 ? "minimum 3 characaters required" : "";
+        break;
+      case "password":
+        formErrors.password =
+          value.length < 6 ? "minimum 6 characaters required" : "";
+        break;
+      default:
+        break;
+    }
+
+    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
+
+  }
+  handleSubmit(e){
+    
+    e.preventDefault()
+    
+    if (formValid(this.state)) {
+      fetch('http://c89841f1.ngrok.io/api/users', {
+        method: 'POST',
+          headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: this.state.username,
+          password: this.state.password
+        })
+       
+        
+      })
+       .then(response=>response.json())
+      .then(response=>{
+        console.log(response)
+      this.setState({
+        resp:response
+      })
+        if(this.state.resp.status_code==201)
+    { 
+      localStorage.setItem("token", JSON.stringify(this.state.resp.token))
+     
+      
+      this.setState({
+        LoggedIn:true
+      })
+    }
+  else{
+    swal({
+      
+      title: "User not Found",
+      icon: "error",
+      dangerMode: true,
+    })
+  }}
+      )
+    
+    }
+    else{
+      swal({
+      
+        title: "Not Valid",
+        icon: "error",
+        dangerMode: true,
+      })
+    }
+  }
+
 
    
   
   render() {
     const { formErrors } = this.state;
-
+      if(this.state.LoggedIn){
+        return(
+          <Redirect to={{
+            pathname: '/Profile',
+           
+        }}
+/>
+        )
+      }
     return (
       <div className="container">
         <div class="row">
@@ -110,16 +197,17 @@ class LoginUser extends Component {
                       <input
                         
                          name="username"
-                        type="username"
+                        type="text"
                         class="form-control"
                         placeholder="Username"
                         noValidate
-                        onChange={this.handleChange}
+                        value={this.state.username}
+                        onChange={this.onChange}
                         
                       />
                             {formErrors.username.length > 0 && (
                 <span  style={{color:"red",padding:"-10px"}}className="errorMessage">{formErrors.username}</span>
-              )}
+                           )}
                     </div>
                     
               
@@ -138,13 +226,13 @@ class LoginUser extends Component {
                         class="form-control"
                         placeholder="Password"
                         noValidate
-                        onChange={this.handleChange}
+                        onChange={this.onChange}
                       />
                       
                     {formErrors.password.length > 0 && (
                 <span  style={{color:"red",padding:"-10px"}}className="errorMessage">{formErrors.password}</span>
-                    
                     )}
+                    
                     </div>
                     <div className="form-group">
                       <input
@@ -152,7 +240,7 @@ class LoginUser extends Component {
                         value="Login"
                         class="btn login_btn"
                         id="btnlog"
-                        onClick={this.onClickLogin}
+                        onClick={this.handleSubmit}
                       />
                     </div>
                   </form>
@@ -162,9 +250,9 @@ class LoginUser extends Component {
                       style={{ marginTop: "60px" }}
                     >
                       Don't have an account?
-                      <a href="#" style={{ color: "#65b4ce" }}>
+                      <Link to="/Signup" style={{ color: "#65b4ce" }}>
                         Register
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
