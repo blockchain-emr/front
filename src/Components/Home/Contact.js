@@ -36,7 +36,7 @@ export default class Contact extends Component {
                   action="contact_process.php"
                   method="post"
                   id="contactForm"
-                  novalidate="noValidate"
+                  noValidate="noValidate"
                 >
                   <div class="col-md-6">
                     <div class="form-group">
