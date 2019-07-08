@@ -3,8 +3,8 @@ import { Tab, Tabs } from "react-mdl";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginUser from "../User/LoginUser.js";
 import LoginOrg from "../Orgnization/LoginOrg.js";
-import Footer from "./Footer.js";
 import LoginHeader from "./LoginHeader";
+import Footer from "./Footer.js";
 class Login extends Component {
   constructor(props) {
     super(props);

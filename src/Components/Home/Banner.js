@@ -9,13 +9,12 @@ export default class Banner extends Component {
 			<div class="container">
 				<div class="banner_content">
 					<h2>
-					Control your health 
-  <br/>
-  information securely,<br/>
-						in one place <br/>
+						The Future <br/>
+						Of  <br/>
+						Digital Medical Records <br/>
 					</h2>
 					<p>
-					Your doctor has selected <span style={{color:"black",fontWeight:"bold"}}>CARE</span><span style={{color:"#65b4ce",fontWeight:"bold"}}>BLOCKS</span> so you can access your medical records anytime, anywhere
+						Secure and User friendly medical records management
 					</p>
 					
 				</div>
