@@ -3,6 +3,8 @@ import "../../Style/User/loginUser.css";
 import axios from 'axios';
 import {Link,Redirect} from "react-router-dom";
 import swal from 'sweetalert';
+import jQuery from 'jquery';
+
 
 const formValid = ({ formErrors, ...rest }) => {
   let valid = true;
@@ -27,11 +29,11 @@ class LoginUser extends Component {
   constructor(props) {
     super(props);
      this.state = {
-      username: "",
+      address: "",
       password: "",
       resp:[],
       formErrors: {
-        username:"",
+        address:"",
         password: ""
       }}
     this.onChange=this.onChange.bind(this);
@@ -75,6 +77,13 @@ class LoginUser extends Component {
 
    
 };*/
+
+onClick(e)
+{
+  /*jQuery.get('', function(data) {
+    alert(data);
+});*/
+}
   onChange(e){
     e.preventDefault();
       this.setState({[e.target.name]:e.target.value})
@@ -82,8 +91,8 @@ class LoginUser extends Component {
     let formErrors = { ...this.state.formErrors };
 
     switch (name) {
-      case "username":
-        formErrors.username =
+      case "address":
+        formErrors.address =
           value.length < 3 ? "minimum 3 characaters required" : "";
         break;
       case "password":
@@ -109,7 +118,7 @@ class LoginUser extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: this.state.username,
+          address: this.state.address,
           password: this.state.password
         })
        
@@ -194,19 +203,20 @@ class LoginUser extends Component {
                           <i class="fas fa-user" />
                         </span>
                       </div>
+                      
                       <input
                         
-                         name="username"
+                         name="address"
                         type="text"
                         class="form-control"
-                        placeholder="Username"
+                        placeholder="Address"
                         noValidate
-                        value={this.state.username}
                         onChange={this.onChange}
                         
                       />
-                            {formErrors.username.length > 0 && (
-                <span  style={{color:"red",padding:"-10px"}}className="errorMessage">{formErrors.username}</span>
+                      
+                            {formErrors.address.length > 0 && (
+                <span  style={{color:"red",padding:"-10px"}}className="errorMessage">{formErrors.address}</span>
                            )}
                     </div>
                     
@@ -243,6 +253,7 @@ class LoginUser extends Component {
                         onClick={this.handleSubmit}
                       />
                     </div>
+                    
                   </form>
                   <div classname="card-footer">
                     <div
