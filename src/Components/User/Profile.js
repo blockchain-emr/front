@@ -83,11 +83,11 @@ class Profile extends Component {
       }
      this.setState({email: email})
    
-     let token = '';
-    if (localStorage && localStorage.getItem('token')) {
-       token = JSON.parse(localStorage.getItem('token'));
+     let access_token = '';
+    if (localStorage && localStorage.getItem('access_token')) {
+       access_token =localStorage.getItem('access_token');
       }
-     this.setState({token: token})
+     this.setState({access_token: access_token})
    
      let age = '';
      if (localStorage && localStorage.getItem('age')) {
@@ -250,7 +250,7 @@ if (formValid(this.state)) {
                       <hr />
                       <div class="input-group mb-3">
                         <label style={{fontSize:"20px",color:"gray"}}>Phone :</label>
-                        <label style={{fontSize:"20px",marginLeft:"10px"}}>{}</label>
+                        <label style={{fontSize:"20px",marginLeft:"10px"}}>{this.state.access_token}</label>
                       </div>
                       <hr />
                       <div class="input-group mb-3">
