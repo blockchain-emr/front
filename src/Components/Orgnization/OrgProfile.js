@@ -61,9 +61,9 @@ export default class OrgProfile extends Component {
   componentWillMount(){
      let token = '';
     if (localStorage && localStorage.getItem('token')) {
-       token = JSON.parse(localStorage.getItem('token'));
+      token = localStorage.getItem('token');
       }
-     this.setState({token: token})
+     this.setState({token:token})
     
      
   }

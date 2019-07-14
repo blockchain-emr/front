@@ -1,6 +1,35 @@
 import React, { Component } from "react";
 import swal from 'sweetalert';
 import {Link,Redirect} from "react-router-dom";
+import {Button,Dialog,DialogActions,DialogContent,DialogTitle}from 'react-mdl';
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+function myFunction() {
+  /* Get the text field */
+  var copyText = document.getElementById("myInput");
+
+  /* Select the text field */
+  copyText.select();
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  
+  /* Alert the copied text */
+  alert("Copied the text: " + copyText.value);
+
+}
+
 const emailRegex = RegExp(
   /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
 );
@@ -25,11 +54,13 @@ const formValid = ({ formErrors, ...rest }) => {
 class SignupUser extends Component {
   constructor(props) {
     super(props);
+    this.handleOpenDialog = this.handleOpenDialog.bind(this);
+    this.handleCloseDialog = this.handleCloseDialog.bind(this);
+    this.onClick=this.onClick.bind(this)
 
     this.state = {
       firstName: null,
       lastName: null,
-      userName:null,
       email: null,
       phone: null,
       nationalId:null,
@@ -39,7 +70,6 @@ class SignupUser extends Component {
       formErrors: {
         firstName: "",
         lastName: "",
-        userName:"",
         email: "",
         nationalId:"",
         phone: "",
@@ -49,52 +79,64 @@ class SignupUser extends Component {
     };
   }
 
+
+ 
   handleSubmit = e => {
     e.preventDefault();
 if (formValid(this.state)) {
-      fetch('http://c89841f1.ngrok.io/api/users', {
+  
+      fetch('http://192.168.1.4:5000/register', {
         method: 'POST',
-          headers: {
+        headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
+        
+  
         body: JSON.stringify({
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
-          phone: this.state.phone,
-          nationalId: this.state.nationalId,
+         age: this.state.age,
           email: this.state.email,
-          password: this.state.password,
-          age:this.state.age
+         first_name: this.state.firstName,
+         last_name: this.state.lastName,
+         national_id: this.state.nationalId,
+         password: this.state.password,
+         phone_number: this.state.phone
         })
        
         
       })
-       .then(response=>response.json())
+      .then(response => response.json())
       .then(response=>{
-        console.log(response)
+       
       this.setState({
         resp:response
       })
-        if(this.state.resp.status_code==201)
+        if(this.state.resp.status==201)
+        
     { 
+     console.log(response)
+     console.log(this.state.resp.address)
+    
+     this.handleOpenDialog();
+    
       
-      
-      this.setState({
+      /*this.setState({
         validAccount:true
-      })
+      })*/
     }
   }
       )
     
     }
     else{
+
       swal({
       
         title: "Not Valid",
         icon: "error",
         dangerMode: true,
       })
+      
     }
   
   };
@@ -111,10 +153,6 @@ if (formValid(this.state)) {
         break;
       case "lastName":
         formErrors.lastName =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
-      case "userName":
-        formErrors.userName =
           value.length < 3 ? "minimum 3 characaters required" : "";
         break;
       case "email":
@@ -141,7 +179,27 @@ if (formValid(this.state)) {
 
     this.setState({ formErrors, [name]: value }, () => console.log(this.state));
   };
+  
+onClick()
+{
+  
+  download("Address.txt",this.state.resp.address);
+  
+}
 
+  handleOpenDialog() {
+    this.setState({
+      openDialog: true
+    });
+  }
+
+  handleCloseDialog() {
+    this.setState({
+      openDialog: false
+    });
+
+    
+  }
   render() 
   {
     const { formErrors } = this.state;
@@ -154,7 +212,6 @@ if (formValid(this.state)) {
 />
       )
     }
-
     return (
       <div className="container" >
         <div className="row"style={{height:"500px"}}>
@@ -210,26 +267,7 @@ if (formValid(this.state)) {
 {formErrors.lastName.length > 0 && (
   <span className="errorMessage" style={{color:"red"}}>,{formErrors.lastName}</span>
 )}
-                    <div className="input-group form-group">
-                      <div className="input-group-prepend">
-                        <span
-                          className="input-group-text"
-                          style={{ backgroundColor: "#65b4ce" }}
-                        >
-                          <i className="fas fa-user" />
-                        </span>
-                      </div>
-                      <input
-                        type="username"
-                        className="form-control"
-                        placeholder="Username"
-                        name="userName"
-                        noValidate
-                        onChange={this.handleChange}
-                      />
-                      {formErrors.userName.length > 0 && (
-                <span className="errorMessage" style={{color:"red"}}>{formErrors.userName}</span>)}
-                    </div>
+                    
                     <div className="input-group form-group">
                       <div className="input-group-prepend">
                         <span
@@ -351,6 +389,28 @@ if (formValid(this.state)) {
                       />
                     </div>
                   </form>
+                  <div>
+         
+          <Dialog open={this.state.openDialog} style={{width:"400px"}}>
+            <DialogTitle  style={{color:"#65b4ce"}}>Save your Address</DialogTitle>
+            <DialogContent>
+            <div class="input-group mb-3">
+  <input type="text" readOnly class="form-control" id="myInput" style={{textAlign:"center"}} value={this.state.resp.address} />
+  <div class="input-group-append">
+    <button class="btn btn-success" onClick={myFunction}  type="button">Copy</button>
+  </div>
+</div>
+
+              
+            </DialogContent>
+            <DialogActions >
+            <Button type='button' onClick={this.handleCloseDialog}>Close</Button>
+            <Button type='button' onClick={this.onClick}>Save as text</Button>
+             
+              
+            </DialogActions>
+          </Dialog>
+        </div>
                 </div>
               </div>
             </div>

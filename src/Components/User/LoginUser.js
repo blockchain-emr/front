@@ -1,8 +1,24 @@
 import React, { Component } from "react";
 import "../../Style/User/loginUser.css";
-import axios from 'axios';
-import {Link,Redirect} from "react-router-dom";
-import swal from 'sweetalert';
+import axios from "axios";
+import { Link, Redirect } from "react-router-dom";
+import swal from "sweetalert";
+import jQuery from "jquery";
+
+let fileReader;
+
+const handleFileread = e => {
+  const content = fileReader.result;
+  document.getElementById('addressTextBox').value=content;
+  
+  console.log(content)
+
+};
+const handleFileChosen = file => {
+  fileReader = new FileReader();
+  fileReader.onloadend = handleFileread;
+  fileReader.readAsText(file);
+};
 
 const formValid = ({ formErrors, ...rest }) => {
   let valid = true;
@@ -21,46 +37,34 @@ const formValid = ({ formErrors, ...rest }) => {
 };
 
 class LoginUser extends Component {
- 
-  
- 
   constructor(props) {
     super(props);
-     this.state = {
-      username: "",
+    this.state = {
+      address: "",
       password: "",
-      resp:[],
+      resp: [],
       formErrors: {
-        username:"",
+        address: "",
         password: ""
-      }}
-    this.onChange=this.onChange.bind(this);
-    this.handleSubmit=this.handleSubmit.bind(this);
-  }
-  
-
- /*  handleSubmit = e => {
+      }
+    };
+    this.onChange = this.onChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     
-    return(
-    <Link to="/Profile"></Link>)
-   if (formValid(this.state)) {
-      
-         
-      
-    } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
-    }
   }
   
-  
-  handleChange = e => {
+ 
+ 
+  onChange(e) {
     e.preventDefault();
+    this.setState({address:document.getElementById('addressTextBox').value});
+    
     const { name, value } = e.target;
     let formErrors = { ...this.state.formErrors };
 
     switch (name) {
-      case "username":
-        formErrors.username =
+      case "address":
+        formErrors.address =
           value.length < 3 ? "minimum 3 characaters required" : "";
         break;
       case "password":
@@ -72,99 +76,69 @@ class LoginUser extends Component {
     }
 
     this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-
-   
-};*/
-  onChange(e){
-    e.preventDefault();
-      this.setState({[e.target.name]:e.target.value})
-      const { name, value } = e.target;
-    let formErrors = { ...this.state.formErrors };
-
-    switch (name) {
-      case "username":
-        formErrors.username =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
-      case "password":
-        formErrors.password =
-          value.length < 6 ? "minimum 6 characaters required" : "";
-        break;
-      default:
-        break;
-    }
-
-    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-
   }
-  handleSubmit(e){
-    
-    e.preventDefault()
-    
+  handleSubmit(e) {
+    e.preventDefault();
+
     if (formValid(this.state)) {
-      fetch('http://c89841f1.ngrok.io/api/users', {
-        method: 'POST',
-          headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+      fetch("http://192.168.1.4:5000/auth", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          username: this.state.username,
+          address: this.state.address,
           password: this.state.password
         })
-       
-        
       })
-       .then(response=>response.json())
-      .then(response=>{
-        console.log(response)
-      this.setState({
-        resp:response
-      })
-        if(this.state.resp.status_code==201)
-    { 
-      localStorage.setItem("token", JSON.stringify(this.state.resp.token))
-     
-      
-      this.setState({
-        LoggedIn:true
-      })
-    }
-  else{
-    swal({
-      
-      title: "User not Found",
-      icon: "error",
-      dangerMode: true,
-    })
-  }}
-      )
-    
-    }
-    else{
+        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+          this.setState({
+            resp: response
+          });
+          if (this.state.resp.status== 200) {
+            
+            localStorage.setItem(
+              "access_token",
+            this.state.resp.access_token
+            );
+           
+            this.setState({
+              LoggedIn: true
+            });
+
+
+          } 
+          else {
+            swal({
+              title: "User not Found",
+              icon: "error",
+              dangerMode: true
+            });
+          }
+        });
+    } else {
       swal({
-      
         title: "Not Valid",
         icon: "error",
-        dangerMode: true,
-      })
+        dangerMode: true
+      });
     }
   }
 
-
-   
-  
   render() {
     const { formErrors } = this.state;
-      if(this.state.LoggedIn){
-        return(
-          <Redirect to={{
-            pathname: '/Profile',
-           
-        }}
-/>
-        )
-      }
+    if (this.state.LoggedIn) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/Profile"
+          }}
+        />
+      );
+    }
     return (
       <div className="container">
         <div class="row">
@@ -194,23 +168,28 @@ class LoginUser extends Component {
                           <i class="fas fa-user" />
                         </span>
                       </div>
+
                       <input
-                        
-                         name="username"
+                        id="addressTextBox"
+                        name="address"
                         type="text"
                         class="form-control"
-                        placeholder="Username"
+                        placeholder="Address"
                         noValidate
-                        value={this.state.username}
                         onChange={this.onChange}
                         
                       />
-                            {formErrors.username.length > 0 && (
-                <span  style={{color:"red",padding:"-10px"}}className="errorMessage">{formErrors.username}</span>
-                           )}
+
+                      {formErrors.address.length > 0 && (
+                        <span
+                          style={{ color: "red", padding: "-10px" }}
+                          className="errorMessage"
+                        >
+                          {formErrors.address}
+                        </span>
+                      )}
                     </div>
-                    
-              
+
                     <div class="input-group form-group">
                       <div class="input-group-prepend">
                         <span
@@ -228,11 +207,15 @@ class LoginUser extends Component {
                         noValidate
                         onChange={this.onChange}
                       />
-                      
-                    {formErrors.password.length > 0 && (
-                <span  style={{color:"red",padding:"-10px"}}className="errorMessage">{formErrors.password}</span>
-                    )}
-                    
+
+                      {formErrors.password.length > 0 && (
+                        <span
+                          style={{ color: "red", padding: "-10px" }}
+                          className="errorMessage"
+                        >
+                          {formErrors.password}
+                        </span>
+                      )}
                     </div>
                     <div className="form-group">
                       <input
@@ -241,6 +224,13 @@ class LoginUser extends Component {
                         class="btn login_btn"
                         id="btnlog"
                         onClick={this.handleSubmit}
+                      />
+                      <input
+                        type="file"
+                        id="file"
+                        multiple
+                        className="input-file"
+                        onChange={e => handleFileChosen(e.target.files[0])}
                       />
                     </div>
                   </form>

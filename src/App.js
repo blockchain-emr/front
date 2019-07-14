@@ -19,6 +19,7 @@ import All from './Components/Home/All';
 import OrgMainPage from './Components/Orgnization/OrgMainPage';
 import Search from './Components/Orgnization/Search';
 import Notfound from './Components/Home/Notfound';
+import ContactDr from './Components/User/ContactDr';
 class App extends Component {
   render() {
     return (
@@ -29,7 +30,8 @@ class App extends Component {
       <Route path="/Login" component={Login}/>
       <Route path="/Signup" component={Signup}/>
       <Route path="/Profile" component={UserMainPage}/>
-      <Route path="/OrgProfile" component={OrgMainPage}/> 
+      <Route path="/OrgProfile" component={OrgMainPage}/>
+      <Route path="/ContactDr" component={ContactDr}/> 
       
      
       

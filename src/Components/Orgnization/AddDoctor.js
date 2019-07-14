@@ -28,7 +28,7 @@ export default class AddDoctor extends Component {
     this.state = {
       firstName: null,
       lastName: null,
-      userName:null,
+      organization:null,
       email: null,
       phone: null,
       password: null,
@@ -36,7 +36,7 @@ export default class AddDoctor extends Component {
       formErrors: {
         firstName: "",
         lastName: "",
-        userName:"",
+        organization:"",
         email: "",
         phone: "",
         password: ""
@@ -46,17 +46,17 @@ export default class AddDoctor extends Component {
     handleSubmit = e => {
       e.preventDefault();
   if (formValid(this.state)) {
-        fetch('http://c89841f1.ngrok.io/api/users', {
+        fetch('http://192.168.1.4:5000/doctor/register', {
           method: 'POST',
             headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            firstName: this.state.firstName,
-            lastName: this.state.lastName,
-            phone: this.state.phone,
-            userName: this.state.userName,
+            first_name: this.state.firstName,
+            last_name: this.state.lastName,
+            phone_number: this.state.phone,
+            organization: this.state.organization,
             email: this.state.email,
             password: this.state.password,
             
@@ -70,12 +70,25 @@ export default class AddDoctor extends Component {
         this.setState({
           resp:response
         })
-          if(this.state.resp.status_code==201)
+         
+      
+        if(this.state.resp.msg=="Registered!")
       { 
+        swal({
+      title: 'Added Successfully',
+      icon: 'success',
+      timer: 3000,
+    
+        })
         
         
-        this.setState({
-          validAccount:true
+      }
+      else{
+        swal({
+        
+          title: " Error :(",
+          icon: "error",
+          dangerMode: true,
         })
       }
     }
@@ -107,8 +120,8 @@ export default class AddDoctor extends Component {
           formErrors.lastName =
             value.length < 3 ? "minimum 3 characaters required" : "";
           break;
-        case "userName":
-          formErrors.userName =
+        case "organization":
+          formErrors.organization =
             value.length < 3 ? "minimum 3 characaters required" : "";
           break;
         case "email":
@@ -190,16 +203,16 @@ export default class AddDoctor extends Component {
                     
                       <input
                         type="text"
-                        placeholder="Username"
+                        placeholder="Organization"
                         aria-label="Username"
-                        name="userName"
+                        name="organization"
                         className="form-control"
                         noValidate
                         onChange={this.handleChange}
                         style={{ textAlign: "center" }}
                       />
-                      {formErrors.userName.length > 0 && (
-  <span className="errorMessage" style={{color:"red"}}>{formErrors.userName}</span>
+                      {formErrors.organization.length > 0 && (
+  <span className="errorMessage" style={{color:"red"}}>{formErrors.organization}</span>
 )}
                       <br />
                       <input

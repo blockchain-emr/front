@@ -1,6 +1,36 @@
 import React, { Component } from "react";
 import swal from 'sweetalert';
 import {Link,Redirect} from "react-router-dom";
+
+import {Button,Dialog,DialogActions,DialogContent,DialogTitle}from 'react-mdl';
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+function myFunction() {
+  /* Get the text field */
+  var copyText = document.getElementById("myInput");
+
+  /* Select the text field */
+  copyText.select();
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  
+  /* Alert the copied text */
+  alert("Copied the text: " + copyText.value);
+
+}
+
 const emailRegex = RegExp(
   /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
 );
@@ -25,13 +55,16 @@ const formValid = ({ formErrors, ...rest }) => {
 class SignupOrg extends Component {
   constructor(props) {
     super(props);
-
+    this.handleOpenDialog = this.handleOpenDialog.bind(this);
+    this.handleCloseDialog = this.handleCloseDialog.bind(this);
+    this.onClick=this.onClick.bind(this)
     this.state = {
       fullOrgName: null,
       orgName:null,
       email: null,
       phone: null,
       password: null,
+      resp:[],
       formErrors: {
         fullOrgName: "",
       orgName:"",
@@ -46,18 +79,17 @@ class SignupOrg extends Component {
     e.preventDefault();
 
       if (formValid(this.state)) {
-        fetch('http://c89841f1.ngrok.io/api/users', {
+        fetch('http://192.168.1.4:5000/organization/register', {
           method: 'POST',
             headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            username: this.state.username,
-            fullOrgName:this.state.fullOrgName,
-            orgName:this.state.orgName,
+            full_name:this.state.fullOrgName,
+            username:this.state.orgName,
             email:this.state.email,
-            phone:this.state.phone,
+            phone_number:this.state.phone,
             password: this.state.password
           })
          
@@ -69,9 +101,15 @@ class SignupOrg extends Component {
         this.setState({
           resp:response
         })
-          if(this.state.resp.status_code==201)
+          if(this.state.resp.msg=="Registered!")
       { 
-        
+        swal({
+      title: 'Registered Successfully',
+      text: 'Login now !',
+      icon: 'success',
+      timer: 3000,
+      
+        })
         
         this.setState({
           validAccount:true
@@ -125,6 +163,24 @@ class SignupOrg extends Component {
 
     this.setState({ formErrors, [name]: value }, () => console.log(this.state));
   };
+  onClick()
+{
+  
+  download("Address.txt",this.state.resp.address);
+  
+}
+
+handleOpenDialog() {
+  this.setState({
+    openDialog: true
+  });
+}
+handleCloseDialog() {
+  this.setState({
+    openDialog: false
+  });
+
+}
 
   render() {
     const { formErrors } = this.state;
@@ -281,6 +337,7 @@ class SignupOrg extends Component {
                   
                    
                 </div>
+            
               </div>
             </div>
           </div>

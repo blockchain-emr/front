@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../../Style/User/Profile.css";
+import axios from "axios";
 import {
   Button,
   Dialog,
@@ -37,34 +38,21 @@ class Profile extends Component {
     this.state = {
       firstName: null,
       lastName: null,
-      userName:null,
       email: null,
       phone: null,
       nationalId:null,
       age:null,
-      password: null,
       resp:[],
+      userInfo:[],
       formErrors: {
         firstName: "",
         lastName: "",
-        userName:"",
         email: "",
         nationalId:"",
         phone: "",
         age:"",
-        password: ""
+        
       }
-    };
-    this.state1 = {
-      firstName: "",
-      lastName: "",
-      userName:"",
-      email: "",
-      phone: "",
-      nationalId:"",
-      age:"",
-      password: "",
-     
     };
   
     let LoggedIn=true
@@ -76,37 +64,38 @@ class Profile extends Component {
     this.handleOpenDialog = this.handleOpenDialog.bind(this);
     this.handleCloseDialog = this.handleCloseDialog.bind(this);
   }
-  componentWillMount(){
-    let email = '';
-    if (localStorage && localStorage.getItem('email')) {
-       email = JSON.parse(localStorage.getItem('email'));
-      }
-     this.setState({email: email})
-   
-     let token = '';
-    if (localStorage && localStorage.getItem('token')) {
-       token = JSON.parse(localStorage.getItem('token'));
-      }
-     this.setState({token: token})
-   
-     let age = '';
-     if (localStorage && localStorage.getItem('age')) {
-        age = JSON.parse(localStorage.getItem('age'));
-       }
-      this.setState({age: age})
 
-      let phone = '';
-     if (localStorage && localStorage.getItem('phone')) {
-        phone = JSON.parse(localStorage.getItem('phone'));
-       }
-      this.setState({phone: phone})
-    
+  componentWillMount(){
+    let access_token = '';
+    if (localStorage&& localStorage.getItem('access_token')) {
+      access_token = localStorage.getItem('access_token');
+      }
+     this.setState({access_token:access_token}) 
      
   }
+  componentDidMount()
+  {
+    const AuthStr = 'Bearer '.concat(this.state.access_token); 
+    axios.get("http://192.168.1.4:5000/account/profile", { headers: { Authorization: AuthStr } })
+    .then(response=>{
+      
+      console.log(response.data)
+      
+      this.setState
+      ({
+        userInfo:response.data
+        
+      })
+
+     
+    })
+  }
+  
+  
 
   handleOpenDialog() {
     
-    
+   
     this.setState({
       openDialog: true
     });
@@ -121,21 +110,23 @@ class Profile extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+   
 if (formValid(this.state)) {
-      fetch('http://c89841f1.ngrok.io/api/users', {
+  const AuthStr = 'Bearer '.concat(this.state.access_token); 
+      fetch('http://192.168.1.4:5000/account/profile', {
         method: 'POST',
           headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          Authorization:AuthStr
         },
         body: JSON.stringify({
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
-          phone: this.state.phone,
-          nationalId: this.state.nationalId,
+          first_name: this.state.firstName,
+          last_name: this.state.lastName,
+          phone_number: this.state.phone,
+          national_id: this.state.nationalId,
           email: this.state.email,
           age:this.state.age,
-          password: this.state.password
         })
        
         
@@ -143,20 +134,29 @@ if (formValid(this.state)) {
        .then(response=>response.json())
       .then(response=>{
         console.log(response)
+     
       this.setState({
         resp:response
       })
-        if(this.state.resp.status_code==201)
+        if(this.state.resp.status==201)
     {   
       this.handleCloseDialog();
-      swal(
-        'Good job!',
-        'You clicked the button!',
-        'success'
+     
+      swal({
+        title: 'Updating',
+    text: 'Updated Successfully',
+    icon: 'success',
+    timer: 2000,
+    buttons: false,
+      }
+        
       )
       
-      window.location.reload();
-    }
+      .then(() => { window.location.reload()})
+       
+      
+     
+      }
   }
       )
     
@@ -174,6 +174,7 @@ if (formValid(this.state)) {
 
   handleChange = e => {
     e.preventDefault();
+   
     const { name, value } = e.target;
     let formErrors = { ...this.state.formErrors };
 
@@ -233,29 +234,25 @@ if (formValid(this.state)) {
                         color: "#65b4ce"
                       }}
                     >
-                      John Doe
+                      {this.state.userInfo.first_name} {this.state.userInfo.last_name}
                     </span>
                   </h4>
                   <div className="container">
                     <form>
-                      <div class="input-group mb-3">
-                        <label style={{fontSize:"20px",color:"gray"}}>Username :</label>
-                        <lable style={{fontSize:"20px",marginLeft:"10px"}}>{}</lable>
-                      </div>
-                      <hr />
+                      
                       <div class="input-group mb-3">
                         <label style={{fontSize:"20px",color:"gray"}}>Email :</label>
-                        <label style={{fontSize:"20px",marginLeft:"10px"}}>{}</label>
+                        <label style={{fontSize:"20px",marginLeft:"10px"}}>{this.state.userInfo.email}</label>
                       </div>
                       <hr />
                       <div class="input-group mb-3">
                         <label style={{fontSize:"20px",color:"gray"}}>Phone :</label>
-                        <label style={{fontSize:"20px",marginLeft:"10px"}}>{}</label>
+                        <label style={{fontSize:"20px",marginLeft:"10px"}}>{this.state.userInfo.phone_number}</label>
                       </div>
                       <hr />
                       <div class="input-group mb-3">
                         <label style={{fontSize:"20px",color:"gray"}}>Age :</label>
-                        <lable style={{fontSize:"20px",marginLeft:"10px"}}>{}</lable>
+                        <lable style={{fontSize:"20px",marginLeft:"10px"}}>{this.state.userInfo.age}</lable>
                       </div>
                     </form>
                     <div>
@@ -277,25 +274,16 @@ if (formValid(this.state)) {
                         open={this.state.openDialog}
                       >
                         <form  onSubmit={this.handleSubmit} noValidate>
+                        
                         <input
-                          type="username"
-                          className="form-control"
-                          placeholder="Username"
-                          name="userName"
-                          noValidate
-                          onChange={this.handleChange}
-                          style={{marginBottom:"10px"}} 
-                        />
-  {formErrors.userName.length > 0 && (
-  <span className="errorMessage" style={{color:"black"}}>{formErrors.userName}</span>
-)}
-                        <input
+                          id="first"
                           type="text"
-                          placeholder="First name"
+                          placeholder={"First Name  ("+this.state.userInfo.first_name+")"}
                           aria-label="First name"
                           name="firstName"
                           className="form-control"
                           noValidate
+                         
                         
                           onChange={this.handleChange}
                           style={{marginBottom:"10px"}}
@@ -304,8 +292,9 @@ if (formValid(this.state)) {
   <span className="errorMessage" style={{color:"black"}}>{formErrors.firstName}</span>
 )}
                         <input
+                         id="last"
                           type="text"
-                          placeholder="Last name"
+                          placeholder={"Last Name  ("+this.state.userInfo.last_name+")"}
                           aria-label="Last name"
                           name="lastName"
                           className="form-control"
@@ -318,9 +307,10 @@ if (formValid(this.state)) {
 )}
                         
                         <input
+                         id="phone"
                           type="phone"
                           className="form-control"
-                          placeholder="Phone"
+                          placeholder={"Phone  ("+this.state.userInfo.phone_number+")"}
                           name="phone"
                           noValidate
                           onChange={this.handleChange}
@@ -331,9 +321,10 @@ if (formValid(this.state)) {
 )}
                         
                         <input
+                         id="email"
                           type="email"
                           className="form-control"
-                          placeholder="Email"
+                          placeholder={"Email  ("+this.state.userInfo.email+")"}
                           noValidate
                           name="email"
                           onChange={this.handleChange}
@@ -342,11 +333,24 @@ if (formValid(this.state)) {
                         {formErrors.email.length > 0 && (
   <span className="errorMessage" style={{color:"black"}}>{formErrors.email}</span>
 )}
-
+ <input
+  id="national"
+                        type="number"
+                        className="form-control"
+                        placeholder={"National ID  ("+this.state.userInfo.national_id+")"}
+                        name="nationalId"
+                        noValidate
+                        onChange={this.handleChange}
+                        style={{marginBottom:"10px"}}
+                      />
+                      
+                        {formErrors.nationalId.length> 0 && (
+                <span className="errorMessage" style={{color:"black"}}>{formErrors.nationalId}</span>)}
                         <input
+                         id="age"
                           type="number"
                           className="form-control"
-                          placeholder="Age"
+                          placeholder={"Age  ("+this.state.userInfo.age+")"}
                           name="age"
                           noValidate
                           onChange={this.handleChange}
@@ -355,19 +359,7 @@ if (formValid(this.state)) {
                         {formErrors.age.length > 0 && (
   <span className="errorMessage" style={{color:"black"}}>{formErrors.age}</span>
 )}
-                        <input
-                          type="password"
-                          className="form-control"
-                          placeholder="Password"
-                          name="password"
-                          noValidate
-                          onChange={this.handleChange}
-                          style={{marginBottom:"10px"}}
-                        />
-                          {formErrors.password.length> 0 && (
-  <span className="errorMessage" style={{color:"black"}}>{formErrors.password}</span>
-)}
-                        <br />
+                       
                         
                         <DialogActions fullWidth>
                           <Button type="button" style={{ color: "white" }}

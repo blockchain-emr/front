@@ -4,7 +4,7 @@ function searchingFor(term)
     {
         return function(x)
         {
-            return x.username.toLowerCase().includes(term.toLowerCase()) ||x.name.split(' ').slice(0, -1).join(' ').toLowerCase().includes(term.toLowerCase()) ||x.name.split(' ').slice(-1).join(' ').toLowerCase().includes(term.toLowerCase()) || !term;
+            return x.first_name.toLowerCase().includes(term.toLowerCase()) ||x.last_name.toLowerCase().includes(term.toLowerCase())|| !term;
         }
     }
 export default class Search extends Component {
@@ -25,18 +25,33 @@ export default class Search extends Component {
     {
       users:[]
     }
+    componentWillMount(){
+      let token = '';
+      if (localStorage && localStorage.getItem('token')) {
+         token = localStorage.getItem('token');
+        }
+       this.setState({token: token})
+     
 
+    }
     componentDidMount()
     {
-      axios.get("https://jsonplaceholder.typicode.com/users")
-      .then(res=>{
-        console.log(res.data)
-        this.setState
-        ({
-          users:res.data
-        })
+      const AuthStr = 'Bearer '.concat(this.state.token); 
+    axios.get("http://192.168.1.4:5000/doctor", { headers: { Authorization: AuthStr } })
+    .then(response=>{
+      console.log(response)
+      console.log(response.data)
+      
+      this.setState
+      ({
+        users:response.data
+        
       })
-    }
+
+     
+    })
+  }
+  
     searchHandler(event)
     {
         this.setState({term:event.target.value})
@@ -71,7 +86,7 @@ export default class Search extends Component {
                  <input
                  
                  type="text"
-                 placeholder="Username / First Name / Last Name"
+                 placeholder=" First Name or Last Name"
                  aria-label="Username"
                  name="userName"
                  className="form-control"
@@ -88,7 +103,6 @@ export default class Search extends Component {
             <thead style={{backgroundColor:"#65b4ce" ,color:"white"}}>
               <tr classname="container">
                 <th scope="col">#</th>
-                <th scope="col">Username</th>
                 <th scope="col">First Name</th>
                 <th scope="col">Last Name</th>
                 <th scope="col">Email</th>
@@ -98,13 +112,11 @@ export default class Search extends Component {
             <tbody style={{backgroundColor:"white"}}>
             {users.filter(searchingFor(term)).map(user =>
               <tr key={user.id}>
-              
                 <th scope="row">{user.id}</th>
-                <td>{user.username}</td>
-                <td>{user.name.split(' ').slice(0, -1).join(' ')}</td>
-                <td>{user.name.split(' ').slice(-1).join(' ')}</td>
-                <td>{user.email}</td>
-                <td>{user.phone}</td>
+                <td>{user.first_name}</td>
+                <td>{user.last_name}</td>
+                <td></td>
+                <td></td>
                 
               </tr>
             )}
