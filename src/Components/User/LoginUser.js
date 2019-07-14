@@ -177,7 +177,6 @@ class LoginUser extends Component {
                         placeholder="Address"
                         noValidate
                         onChange={this.onChange}
-                        
                       />
 
                       {formErrors.address.length > 0 && (
@@ -221,17 +220,29 @@ class LoginUser extends Component {
                       <input
                         type="submit"
                         value="Login"
-                        class="btn login_btn"
+                        className="btn"
+                        style={{ width: "100%", cursor: "pointer" }}
                         id="btnlog"
                         onClick={this.handleSubmit}
                       />
-                      <input
-                        type="file"
-                        id="file"
-                        multiple
-                        className="input-file"
-                        onChange={e => handleFileChosen(e.target.files[0])}
-                      />
+                    </div>
+                    <div className="form-group">
+                      <label
+                        class="btn btn-warning btn-block"
+                        style={{ cursor: "pointer" }}
+                      >
+                        Load address from File
+                        <input
+                          hidden
+                          type="file"
+                          id="file"
+                          multiple
+                          className="input-file form-control-file"
+                          onChange={e =>
+                            handleFileChosen(e.target.files[0])
+                          }
+                        />
+                      </label>
                     </div>
                   </form>
                   <div classname="card-footer">

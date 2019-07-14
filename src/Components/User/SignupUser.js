@@ -405,7 +405,7 @@ onClick()
             </DialogContent>
             <DialogActions >
             <Button type='button' onClick={this.handleCloseDialog}>Close</Button>
-            <Button type='button' onClick={this.onClick}>Save as text</Button>
+            <Button type='button' onClick={this.onClick}>Save to file</Button>
              
               
             </DialogActions>
