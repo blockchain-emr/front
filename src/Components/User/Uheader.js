@@ -1,11 +1,17 @@
 import React, { Component } from 'react'
 import {Badge,Icon} from "react-mdl";
-import {Link,Redirect,BrowserRouter as Router} from "react-router-dom"
+import {Link,Redirect,BrowserRouter as Router} from "react-router-dom";
+import axios from 'axios';
 export default class Uheader extends Component {
-  
+  constructor(props) {
+    super(props);
+    this.state={
+      userInfo:[]
+    }
+  };
     onClick()
     {
-      localStorage.removeItem('token');
+      localStorage.removeItem('');
       
       return(
         
@@ -13,13 +19,26 @@ export default class Uheader extends Component {
       )
     }
     componentWillMount(){
-      let email = '';
-      if (localStorage && localStorage.getItem('email')) {
-         email = JSON.parse(localStorage.getItem('email'));
-        }
-       this.setState({email: email})
-     
-       
+      let access_token = '';
+    if (localStorage && localStorage.getItem('access_token')) {
+      access_token = localStorage.getItem('access_token');
+      }
+     this.setState({access_token: access_token})  
+    }
+    componentDidMount()
+    {
+      const AuthStr = 'Bearer '.concat(this.state.access_token); 
+      axios.get("http://192.168.1.4:5000/account/profile", { headers: { Authorization: AuthStr } })
+      .then(response=>{
+        
+        console.log(response.data)
+        
+        this.setState
+        ({
+          userInfo:response.data
+          
+        })
+      })
     }
   render() {
     
@@ -46,7 +65,7 @@ export default class Uheader extends Component {
         <i style={{color:"black"}}>|</i>
   </li>
   <li class="nav-item" style={{padding:"8px"}}>
-    <Link class="nav-link" to="/Profile"><i class="fas fa-user-circle" style={{ color: "#65b4ce",fontSize:"15px"}} ><span style={{fontFamily:"Raleway",fontSize:"15px" ,fontWeight:"normal"}}>{this.state.email}</span></i></Link>
+    <Link class="nav-link" to="/Profile"><i class="fas fa-user-circle" style={{ color: "#65b4ce",fontSize:"15px"}} ><span style={{fontFamily:"Raleway",fontSize:"15px" ,fontWeight:"normal"}}>{this.state.userInfo.first_name} {this.state.userInfo.last_name}</span></i></Link>
   </li>
   <li class="nav-item" style={{padding:"8px"}}>
   <Link to="./All">

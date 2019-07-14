@@ -1,6 +1,44 @@
 import React, { Component } from 'react'
-
+import axios from 'axios';
+import {Link,Redirect,BrowserRouter as Router} from "react-router-dom";
 export default class Oheader extends Component {
+  constructor(props) {
+    super(props);
+    this.state={
+      orginfo:[]
+    }
+  };
+    onClick()
+    {
+      localStorage.removeItem('access_token');
+      
+      return(
+        
+        <Link to="./All"></Link>
+      )
+    }
+    componentWillMount(){
+      let access_token = '';
+    if (localStorage && localStorage.getItem('access_token')) {
+       access_token = localStorage.getItem('access_token');
+      }
+     this.setState({access_token: access_token})  
+    }
+    componentDidMount()
+    {
+      const AuthStr = 'Bearer '.concat(this.state.access_token); 
+      axios.get("http://192.168.1.4:5000/account/profile", { headers: { Authorization: AuthStr } })
+      .then(response=>{
+        
+        console.log(response.data)
+        
+        this.setState
+        ({
+          orginfo:response.data
+          
+        })
+      })
+    }
     render() {
         return (
             <div>

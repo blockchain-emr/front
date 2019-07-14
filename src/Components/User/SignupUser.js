@@ -56,6 +56,7 @@ class SignupUser extends Component {
     super(props);
     this.handleOpenDialog = this.handleOpenDialog.bind(this);
     this.handleCloseDialog = this.handleCloseDialog.bind(this);
+    this.onClick=this.onClick.bind(this)
 
     this.state = {
       firstName: null,
@@ -77,50 +78,51 @@ class SignupUser extends Component {
       }
     };
   }
-onClick()
-{
-  download("Address.txt","Shrbooooo");
-}
+
+
  
   handleSubmit = e => {
     e.preventDefault();
 if (formValid(this.state)) {
   
-      fetch('http://c89841f1.ngrok.io/api/users', {
+      fetch('http://192.168.1.4:5000/register', {
         method: 'POST',
-          headers: {
+        headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
+        
+  
         body: JSON.stringify({
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
-          phone: this.state.phone,
-          nationalId: this.state.nationalId,
+         age: this.state.age,
           email: this.state.email,
-          password: this.state.password,
-          age:this.state.age
+         first_name: this.state.firstName,
+         last_name: this.state.lastName,
+         national_id: this.state.nationalId,
+         password: this.state.password,
+         phone_number: this.state.phone
         })
        
         
       })
-       .then(response=>response.json())
+      .then(response => response.json())
       .then(response=>{
-        console.log(response)
+       
       this.setState({
         resp:response
       })
-        if(this.state.resp.status_code==201)
+        if(this.state.resp.status==201)
         
     { 
-      this.handleOpenDialog();
+     console.log(response)
+     console.log(this.state.resp.address)
+    
+     this.handleOpenDialog();
+    
       
-       
-      
-      
-      this.setState({
+      /*this.setState({
         validAccount:true
-      })
+      })*/
     }
   }
       )
@@ -177,6 +179,13 @@ if (formValid(this.state)) {
 
     this.setState({ formErrors, [name]: value }, () => console.log(this.state));
   };
+  
+onClick()
+{
+  
+  download("Address.txt",this.state.resp.address);
+  
+}
 
   handleOpenDialog() {
     this.setState({
@@ -188,6 +197,8 @@ if (formValid(this.state)) {
     this.setState({
       openDialog: false
     });
+
+    
   }
   render() 
   {
@@ -384,7 +395,7 @@ if (formValid(this.state)) {
             <DialogTitle  style={{color:"#65b4ce"}}>Save your Address</DialogTitle>
             <DialogContent>
             <div class="input-group mb-3">
-  <input type="text" readOnly class="form-control" id="myInput" style={{textAlign:"center"}} value="Shrbooooo" />
+  <input type="text" readOnly class="form-control" id="myInput" style={{textAlign:"center"}} value={this.state.resp.address} />
   <div class="input-group-append">
     <button class="btn btn-success" onClick={myFunction}  type="button">Copy</button>
   </div>

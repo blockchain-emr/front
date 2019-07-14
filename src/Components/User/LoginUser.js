@@ -9,8 +9,10 @@ let fileReader;
 
 const handleFileread = e => {
   const content = fileReader.result;
-  document.getElementById('addressTextBox').value = content;
-  console.log(content);
+  document.getElementById('addressTextBox').value=content;
+  
+  console.log(content)
+
 };
 const handleFileChosen = file => {
   fileReader = new FileReader();
@@ -48,53 +50,15 @@ class LoginUser extends Component {
     };
     this.onChange = this.onChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  /*  handleSubmit = e => {
     
-    return(
-    <Link to="/Profile"></Link>)
-   if (formValid(this.state)) {
-      
-         
-      
-    } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
-    }
   }
   
-  
-  handleChange = e => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    let formErrors = { ...this.state.formErrors };
-
-    switch (name) {
-      case "username":
-        formErrors.username =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
-      case "password":
-        formErrors.password =
-          value.length < 6 ? "minimum 6 characaters required" : "";
-        break;
-      default:
-        break;
-    }
-
-    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-
-   
-};*/
-
-  onClick(e) {
-    /*jQuery.get('', function(data) {
-    alert(data);
-});*/
-  }
+ 
+ 
   onChange(e) {
     e.preventDefault();
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({address:document.getElementById('addressTextBox').value});
+    
     const { name, value } = e.target;
     let formErrors = { ...this.state.formErrors };
 
@@ -117,7 +81,7 @@ class LoginUser extends Component {
     e.preventDefault();
 
     if (formValid(this.state)) {
-      fetch("http://c89841f1.ngrok.io/api/users", {
+      fetch("http://192.168.1.4:5000/auth", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -134,16 +98,20 @@ class LoginUser extends Component {
           this.setState({
             resp: response
           });
-          if (this.state.resp.status_code == 201) {
+          if (this.state.resp.status== 200) {
+            
             localStorage.setItem(
-              "token",
-              JSON.stringify(this.state.resp.token)
+              "access_token",
+            this.state.resp.access_token
             );
-
+           
             this.setState({
               LoggedIn: true
             });
-          } else {
+
+
+          } 
+          else {
             swal({
               title: "User not Found",
               icon: "error",
@@ -209,6 +177,7 @@ class LoginUser extends Component {
                         placeholder="Address"
                         noValidate
                         onChange={this.onChange}
+                        
                       />
 
                       {formErrors.address.length > 0 && (
@@ -259,6 +228,7 @@ class LoginUser extends Component {
                       <input
                         type="file"
                         id="file"
+                        multiple
                         className="input-file"
                         onChange={e => handleFileChosen(e.target.files[0])}
                       />
