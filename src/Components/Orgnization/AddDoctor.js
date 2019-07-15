@@ -28,7 +28,6 @@ export default class AddDoctor extends Component {
     this.state = {
       firstName: null,
       lastName: null,
-      organization:null,
       email: null,
       phone: null,
       password: null,
@@ -36,27 +35,36 @@ export default class AddDoctor extends Component {
       formErrors: {
         firstName: "",
         lastName: "",
-        organization:"",
         email: "",
         phone: "",
         password: ""
       }
     }
     };
+    componentWillMount(){
+      let token = '';
+      if (localStorage && localStorage.getItem('token')) {
+         token = localStorage.getItem('token');
+        }
+       this.setState({token: token})
+     
+
+    }
     handleSubmit = e => {
       e.preventDefault();
   if (formValid(this.state)) {
+    const AuthStr = 'Bearer '.concat(this.state.token);
         fetch('http://192.168.1.4:5000/doctor/register', {
           method: 'POST',
             headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            Authorization: AuthStr
           },
           body: JSON.stringify({
             first_name: this.state.firstName,
             last_name: this.state.lastName,
             phone_number: this.state.phone,
-            organization: this.state.organization,
             email: this.state.email,
             password: this.state.password,
             
@@ -201,21 +209,7 @@ export default class AddDoctor extends Component {
 )}
                       <br />
                     
-                      <input
-                        type="text"
-                        placeholder="Organization"
-                        aria-label="Username"
-                        name="organization"
-                        className="form-control"
-                        noValidate
-                        onChange={this.handleChange}
-                        style={{ textAlign: "center" }}
-                      />
-                      {formErrors.organization.length > 0 && (
-  <span className="errorMessage" style={{color:"red"}}>{formErrors.organization}</span>
-)}
-                      <br />
-                      <input
+                                          <input
                         type="tel"
                         className="form-control"
                         placeholder="Phone"

@@ -9,7 +9,7 @@ import {
 } from "react-mdl";
 import swal from "sweetalert";
 import { Link, Redirect } from "react-router-dom";
-
+import axios from 'axios';
 const emailRegex = RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
 const PhoneRegex = RegExp(/^01[0-2]{1}[0-9]{8}/);
 const NationalIdRegex = RegExp(/^[0-9]{14}/);
@@ -37,23 +37,17 @@ export default class OrgProfile extends Component {
       fullOrgName: null,
       email: null,
       phone: null,
-      password: null,
       resp: [],
+      orgInfo:[],
       formErrors: {
         fullOrgName: "",
         orgName: "",
         email: "",
         phone: "",
-        password: ""
+    
       }
     };
-    this.state1 = {
-      orgName: "",
-      fullOrgName: "",
-      email: "",
-      phone: "",
-      password: ""
-    };
+    
 
     this.handleOpenDialog = this.handleOpenDialog.bind(this);
     this.handleCloseDialog = this.handleCloseDialog.bind(this);
@@ -68,6 +62,25 @@ export default class OrgProfile extends Component {
      
   }
 
+  componentDidMount()
+  {
+    const AuthStr = 'Bearer '.concat(this.state.token); 
+    console.log(AuthStr)
+    axios.get("http://192.168.1.4:5000/organization/profile", { headers: { Authorization: AuthStr } })
+
+    .then(response=>{
+    
+      console.log(response.data)
+      
+      this.setState
+      ({
+        orgInfo:response.data
+       })
+       
+     
+    })
+  }
+  
   handleOpenDialog() {
     this.setState({
       openDialog: true
@@ -83,18 +96,19 @@ export default class OrgProfile extends Component {
   handleSubmit = e => {
     e.preventDefault();
 if (formValid(this.state)) {
-      fetch('http://c89841f1.ngrok.io/api/users', {
+  const AuthStr = 'Bearer '.concat(this.state.token); 
+      fetch('http://192.168.1.4:5000/organization/profile', {
         method: 'POST',
           headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          Authorization:AuthStr
         },
         body: JSON.stringify({
-          orgName: this.state.orgName,
-          fullOrgName: this.state.fullOrgName,
-          phone: this.state.phone,
-          email: this.state.email,
-          password: this.state.password
+          username: this.state.orgName,
+          full_name: this.state.fullOrgName,
+          phone_number: this.state.phone,
+          email: this.state.email
         })
        
         
@@ -105,16 +119,20 @@ if (formValid(this.state)) {
       this.setState({
         resp:response
       })
-        if(this.state.resp.status_code==201)
+        if(this.state.resp.status==201)
     {   
       this.handleCloseDialog();
-      swal(
-        'Good job!',
-        'You clicked the button!',
-        'success'
+      swal({
+        title: 'Updating',
+    text: 'Updated Successfully',
+    icon: 'success',
+    timer: 2000,
+    buttons: false,
+      }
+        
       )
       
-      window.location.reload();
+      .then(() => { window.location.reload()})
     }
   }
       )
@@ -183,7 +201,7 @@ if (formValid(this.state)) {
                         color: "#65b4ce"
                       }}
                     >
-                      Organization
+                      {this.state.orgInfo.full_name}
                       <i
                         class="fas fa-hospital-alt"
                         style={{
@@ -201,7 +219,7 @@ if (formValid(this.state)) {
                           Orgname :
                         </label>
                         <lable style={{ fontSize: "20px", marginLeft: "10px" }}>
-                          {}
+                          {this.state.orgInfo.username}
                         </lable>
                       </div>
                       <hr />
@@ -210,7 +228,7 @@ if (formValid(this.state)) {
                           Email :
                         </label>
                         <label style={{ fontSize: "20px", marginLeft: "10px" }}>
-                          {}
+                          {this.state.orgInfo.email}
                         </label>
                       </div>
                       <hr />
@@ -219,7 +237,7 @@ if (formValid(this.state)) {
                           Phone :
                         </label>
                         <label style={{ fontSize: "20px", marginLeft: "10px" }}>
-                          {}
+                          {this.state.orgInfo.phone_number}
                         </label>
                       </div>
                     </form>
@@ -249,7 +267,7 @@ if (formValid(this.state)) {
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Orgname"
+                            placeholder={"Orgname  ("+this.state.orgInfo.username+")"}
                             name="orgName"
                             noValidate
                             onChange={this.handleChange}
@@ -261,7 +279,7 @@ if (formValid(this.state)) {
 
                           <input
                             type="text"
-                            placeholder="Full Orgname"
+                            placeholder={"Full Orgname  ("+this.state.orgInfo.full_name+")"}
                             aria-label="Full Orgname"
                             name="fullOrgName"
                             className="form-control"
@@ -276,7 +294,7 @@ if (formValid(this.state)) {
                           <input
                             type="phone"
                             className="form-control"
-                            placeholder="Phone"
+                            placeholder={"Phone  ("+this.state.orgInfo.phone_number+")"}
                             name="phone"
                             noValidate
                             onChange={this.handleChange}
@@ -289,7 +307,7 @@ if (formValid(this.state)) {
                           <input
                             type="email"
                             className="form-control"
-                            placeholder="Email"
+                            placeholder={"Email  ("+this.state.orgInfo.email+")"}
                             noValidate
                             name="email"
                             onChange={this.handleChange}
@@ -299,19 +317,7 @@ if (formValid(this.state)) {
   <span className="errorMessage" style={{color:"black"}}>{formErrors.email}</span>
 )}
 
-                          <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Password"
-                            name="password"
-                            noValidate
-                            onChange={this.handleChange}
-                            style={{ marginBottom: "10px" }}
-                          />
-                           {formErrors.password.length > 0 && (
-  <span className="errorMessage" style={{color:"black"}}>{formErrors.password}</span>
-)}
-
+                          
                           <DialogActions fullWidth>
                             <Button type="button" style={{ color: "white" }}
                              onClick={this.handleSubmit}>

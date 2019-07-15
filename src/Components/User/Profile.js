@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "../../Style/User/Profile.css";
 import axios from "axios";
+import Consts from "../Const.js";
 import {
   Button,
   Dialog,
@@ -56,10 +57,6 @@ class Profile extends Component {
     };
   
     let LoggedIn=true
-    /*if(token==null)
-    {
-      LoggedIn=false
-    }*/
     
     this.handleOpenDialog = this.handleOpenDialog.bind(this);
     this.handleCloseDialog = this.handleCloseDialog.bind(this);

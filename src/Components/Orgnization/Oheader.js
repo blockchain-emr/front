@@ -10,7 +10,8 @@ export default class Oheader extends Component {
   };
     onClick()
     {
-      localStorage.removeItem('access_token');
+      
+      console.log("hiiiiii")
       
       return(
         
@@ -18,16 +19,16 @@ export default class Oheader extends Component {
       )
     }
     componentWillMount(){
-      let access_token = '';
-    if (localStorage && localStorage.getItem('access_token')) {
-       access_token = localStorage.getItem('access_token');
+      let token = '';
+    if (localStorage && localStorage.getItem('token')) {
+       token = localStorage.getItem('token');
       }
-     this.setState({access_token: access_token})  
+     this.setState({token: token})  
     }
     componentDidMount()
     {
-      const AuthStr = 'Bearer '.concat(this.state.access_token); 
-      axios.get("http://192.168.1.4:5000/account/profile", { headers: { Authorization: AuthStr } })
+      const AuthStr = 'Bearer '.concat(this.state.token); 
+      axios.get("http://192.168.1.4:5000/organization/profile", { headers: { Authorization: AuthStr } })
       .then(response=>{
         
         console.log(response.data)
@@ -54,17 +55,17 @@ export default class Oheader extends Component {
 
   
   <li class="nav-item" style={{padding:"8px"}}>
-    <a class="nav-link" href="#"><i class="fas fa-hospital-alt" style={{ color: "#65b4ce",fontSize:"15px"}} ><span style={{fontFamily:"Raleway",fontSize:"15px" ,fontWeight:"normal"}}>ibrahim</span></i></a>
+    <a class="nav-link" href="#"><i class="fas fa-hospital-alt" style={{ color: "#65b4ce",fontSize:"15px"}} ><span style={{fontFamily:"Raleway",fontSize:"15px" ,fontWeight:"normal"}}> {this.state.orginfo.username}</span></i></a>
   </li>
   <li class="nav-item" style={{padding:"8px",marginTop:"4px"}}>
         <i style={{color:"black"}}>|</i>
   </li>
   <li class="nav-item" style={{padding:"8px"}}>
-  <a href="#">
-                  <button type="button" className="btn btn-danger">
+  <Link to="./All">
+                  <button type="button" className="btn btn-danger" onClick={this.onClick()}>
                     Logout
                   </button>
-                </a>
+                </Link>
   </li>
 </ul>
 </nav>

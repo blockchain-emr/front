@@ -21,8 +21,6 @@ export default class OrgMainPage extends Component {
 
   <Link to="/OrgProfile">Profile<i id="co" class="fas fa-hospital-alt" style={{fontSize:"20px",marginLeft:"51px"}}></i></Link>
   
-  <hr style={{backgroundColor:"#f0f4f7"}} />
-  <Link to="/AddUser">Add User<i class="fas fa-user-plus"style={{fontSize:"20px",marginLeft:"27px"}}></i></Link>
   
   <hr style={{backgroundColor:"#f0f4f7"}} />
   <Link to="./AddDoctor">Add Doctor<i class="fas fa-user-md" style={{fontSize:"23px",marginLeft:"12px"}}></i></Link>

@@ -1,11 +1,42 @@
 import React, { Component } from 'react'
-
+import im from "../../img/team/asd.jpg"
+import axios from "axios"
 export default class LabResult extends Component {
-  state = {
-    showinfo: false
-  };
+  state=
+  {
+    result:[]
+  }
+
+  componentWillMount(){
+    let access_token = '';
+    if (localStorage&& localStorage.getItem('access_token')) {
+      access_token = localStorage.getItem('access_token');
+      }
+     this.setState({access_token:access_token}) 
+     
+  }
+  componentDidMount()
+  {
+    const AuthStr = 'Bearer '.concat(this.state.access_token); 
+    axios.get("http://192.168.1.4:5000/get/notifications", { headers: { Authorization: AuthStr } })
+    .then(response=>{
+      console.log(response.data)
+        
+        this.setState({
+          result:response.data
+        })
+
+      //console.log(["20190714175947975959"])
+      //var data = JSON.parse(response.data)
+     // console.log(data.all_appointments)
+      
+     
+    })
+  }
+ 
+ 
   render() {
-    const { showinfo } = this.state;
+    
     return (
       <div>
       
@@ -16,18 +47,17 @@ export default class LabResult extends Component {
         </div>
         <div className="card card-body mb-3" style={{backgroundColor:"#65b4ce"}}>
           <h4 style={{color:"white"}}>
-            hello
-            <i
-              onClick={() => this.setState({ showinfo: !this.state.showinfo })}
-              className="fas fa-sort-down" style={{ cursor: "pointer", float: "right", color: "White" }}
-            />
+            <span>2019/7/14</span>
+            <br/>
+            <span>Broken bones</span>
+            
           </h4>
-          {showinfo ? (
+
             <ul className="list-group">
-              <li className="list-group-item">Email:</li>
-              <li className="list-group-item">Phone:</li>
+              <li className="list-group-item"><img src={im}/></li>
+
             </ul>
-          ) : null}
+          
           
         </div>
         

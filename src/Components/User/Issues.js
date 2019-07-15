@@ -1,6 +1,40 @@
 import React, { Component } from 'react'
+import axios from "axios";
 
 export default class Issues extends Component {
+  constructor(props) {
+    super(props);
+    this.state={
+      issues:[]
+    }
+  }
+  componentWillMount(){
+    let access_token = '';
+    if (localStorage&& localStorage.getItem('access_token')) {
+      access_token = localStorage.getItem('access_token');
+      }
+     this.setState({access_token:access_token}) 
+     
+  }
+  componentDidMount()
+  {
+    const AuthStr = 'Bearer '.concat(this.state.access_token); 
+    axios.get("http://192.168.1.4:5000/get/chronics", { headers: { Authorization: AuthStr } })
+    .then(response=>{
+      
+      console.log(response.data)
+      
+      this.setState
+      ({
+        issues:response.data
+        
+      })
+
+     
+    })
+  }
+ 
+ 
   render() {
     return (
       <div>
@@ -13,58 +47,24 @@ export default class Issues extends Component {
         <table class="table">
         <thead style={{backgroundColor:"#65b4ce" ,color:"white"}}>
           <tr classname="container">
-            <th scope="col">#</th>
+            
             <th scope="col">Disease Name</th>
             <th scope="col">Diagnostic Date</th>
-            <th scope="col">Doctor Name</th>
+          
           </tr>
+
         </thead>
         <tbody style={{backgroundColor:"white"}}>
+        
+        {
+         
+          this.state.issues.map(u =>
           <tr>
-            <th scope="row">1</th>
-            <td>high blood pressure</td>
-            <td>1/10/2009</td>
-            <td>Ibrahim Mubarak</td>
+            <td>{u.issue}</td>
+            <td>{u.time_stamp.substring(0,4)+" / "+u.time_stamp.substring(4,6)+" / "+u.time_stamp.substring(6,8)}</td>
+            
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td> Lower respiratory infections</td>
-            <td>2/9/2010</td>
-            <td>Hossam Mahmoud</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td> Chronic obstructive pulmonary disease</td>
-            <td>7/6/2009</td>
-            <td>Ahmed Mohamed</td>
-          </tr>
-          <tr>
-            <th scope="row">4</th>
-            <td>lung cancer</td>
-            <td>15/2/2016</td>
-            <td>Ibrahim Taha</td>
-          </tr>
-          <tr>
-            <th scope="row">5</th>
-            <td>Diabetes mellitus</td>
-            <td>9/6/2006</td>
-            <td>Ahmed Eid</td>
-          </tr>
-          
-          <tr>
-            <th scope="row">6</th>
-            <td>Alzheimer’s disease </td>
-            <td>20/4/2017</td>
-            <td>Mohamed Ali</td>
-          </tr>
-          
-          <tr>
-            <th scope="row">7</th>
-            <td>Cirrhosis</td>
-            <td>5/11/2011</td>
-            <td>Ibrahim Taha  </td>
-          </tr>
-          
+        )}
         </tbody>
       </table>
         </div>

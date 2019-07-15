@@ -91,6 +91,7 @@ class LoginOrg extends Component {
         if(this.state.respo.status==200)
     { 
       localStorage.setItem("token",this.state.respo.token)
+      console.log(this.state.respo.token)
     
       this.setState({
         LoggedIn:true
